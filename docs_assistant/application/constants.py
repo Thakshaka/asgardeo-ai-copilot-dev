@@ -1,0 +1,48 @@
+# ==============================
+# Environment Variables
+# ==============================
+# Azure OpenAI
+AZURE_OPENAI_ENDPOINT = "AZURE_OPENAI_ENDPOINT"
+AZURE_DEPLOYMENT_CHAT = "AZURE_DEPLOYMENT_CHAT"
+AZURE_DEPLOYMENT_EMBEDDING = "AZURE_DEPLOYMENT_EMBEDDING"
+OPENAI_API_VERSION = "OPENAI_API_VERSION"
+ENABLED_RERANKER = "ENABLED_RERANKER"
+
+# Copilot
+CP_AZURE_OPENAI_ENDPOINT = "CP_AZURE_OPENAI_ENDPOINT"
+CP_AZURE_OPENAI_API_KEY = "CP_AZURE_OPENAI_API_KEY"
+
+# Vector Database
+ZILLIZ_CLOUD_URI = "ZILLIZ_CLOUD_URI"
+ZILLIZ_CLOUD_API_KEY = "ZILLIZ_CLOUD_API_KEY"
+DOCS_COLLECTION = "DOCS_COLLECTION"
+COLLECTION_NAME = "COLLECTION_NAME"
+
+# Proxy
+PROXY_URL = "PROXY_URL"
+PROXY_TOKEN = "PROXY_TOKEN"
+PROXY_CONSUMER_KEY = "PROXY_CONSUMER_KEY"
+PROXY_CONSUMER_SECRET = "PROXY_CONSUMER_SECRET"
+
+# Authentication
+ASGARDEO_TOKEN_ENDPOINT = "ASGARDEO_TOKEN_ENDPOINT"
+
+# ==============================
+# Default Values
+# ==============================
+DEFAULT_AZURE_DEPLOYMENT_CHAT = "gpt-4o-2024-11-20"
+DEFAULT_OPENAI_API_VERSION = "2025-01-01-preview"
+DEFAULT_AZURE_DEPLOYMENT_EMBEDDING = "ada"
+GPT_MODEL_NAME = "gpt-4o"
+
+# ==============================
+# Retrieval Configuration
+# ==============================
+K_NEIGHBOURS = 20
+MAX_PROMPT_SIZE = 12000
+
+# ==============================
+# Chat Message Types
+# ==============================
+SYSTEM = "system"
+USER = "user"

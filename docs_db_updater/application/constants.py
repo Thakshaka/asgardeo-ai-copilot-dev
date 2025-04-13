@@ -1,0 +1,65 @@
+# ==============================
+# Environment Variables
+# ==============================
+ZILLIZ_CLOUD_URI = "ZILLIZ_CLOUD_URI"
+ZILLIZ_CLOUD_API_KEY = "ZILLIZ_CLOUD_API_KEY"
+DOCS_COLLECTION = "DOCS_COLLECTION"
+RELEASES_COLLECTION = "RELEASES_COLLECTION"
+AZURE_OPENAI_ENDPOINT = "AZURE_OPENAI_ENDPOINT"
+AZURE_OPENAI_API_KEY = "AZURE_OPENAI_API_KEY"
+GITHUB_TOKEN = "GITHUB_TOKEN"
+
+# ==============================
+# GitHub Repository Configuration
+# ==============================
+REPO_NAME = "wso2/docs-is"  # changed to wso2/docs-is
+BRANCH = "master"  # changed to master
+AUTHORIZATION = "Authorization"
+ACCEPT = "Accept"
+TIMEOUT = (10, 60)
+
+# ==============================
+# Product Information
+# ==============================
+PRODUCT = "Product"
+ASGARDEO = "Asgardeo"
+UPDATER_VERSION = "1.0"
+LAST_UPDATED_RELEASE = "last_updated_release"
+LAST_UPDATER_VERSION = "last_updater_version"
+
+# ==============================
+# File System and Paths
+# ==============================
+PATH = "path"
+TREE = "tree"
+FILE_NAME = "filename"
+MD_FORMAT = ".md"
+MAIN_DIR = "en/asgardeo/"  # changed to en/asgardeo
+DOC_PATH = "en/asgardeo/docs/"  # changed to en/asgardeo/docs
+WEB_PATH = "https://wso2.com/asgardeo/docs/"  # changed to asgardeo
+DOC_LINK = "doc_link"
+IGNORE_FILES = ['vs-code', 'index', 'page-not-found', 'asgardeo-cli']  # changed to asgardeo-cli
+IGNORE_REL_PATHS = ("out-prod/asgardeo/docs/index.html", "out-prod/asgardeo/docs/404.html")
+
+# ==============================
+# Document Processing
+# ==============================
+headers_to_split_on = [
+    ("#", "Header1"),
+    ("##", "Header2"),
+    # ("###", "Header3"),  # uncomment this line if we want to switch to the table with splitting on header 3
+]
+HEADER1 = "Header1"
+HEADER2 = "Header2"
+HEADER3 = "Header3"
+TEXT = "text"
+
+# ==============================
+# Vector Database and AI
+# ==============================
+ASGARDEO_METADATA = "AsgardeoMetadata"
+ASGARDEO_AI_EMBEDDING = "ada"
+DEPLOYMENT_VERSION = "2025-01-01-preview"
+VECTOR = "vector"
+STATUS = "status"
+BATCH_SIZE = 200
