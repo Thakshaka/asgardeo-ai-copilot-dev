@@ -74,4 +74,19 @@ async def bulk_response(state, questions, x_request_id, question_context):
             "total_tokens": prompt_tokens + completion_tokens
         }}
     return output_schema
+
+async def stream_response(state, questions, x_request_id, question_context):
+    llm = state.llm
+    system_prompt = state.system_prompt
+    user_prompt = await get_chat_prompt(state, questions, 0, x_request_id, question_context)
+    try:
+        async for chunk in llm.astream([
+            {"role": const.SYSTEM, "content": system_prompt},
+            {"role": const.USER, "content": user_prompt}
+        ]):
+            yield chunk.content
+    except Exception as e:
+        logger.error(f"Error while generating llm response: {e}, id = {x_request_id}")
+        answer = "Error while processing your request. Please try again later"
+        raise HTTPException(status_code=500, detail=answer)
     

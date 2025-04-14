@@ -1,6 +1,6 @@
 from typing import List, Optional, Union
 from fastapi import Request, APIRouter, HTTPException, Header
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from docs_assistant.application import retriever
 from docs_assistant.application import health_check
@@ -21,6 +21,14 @@ def validate_inputs(questions: Union[List[str], str], question_context: Optional
         question_context = questions[0]
 
     return questions, question_context
+
+@router.post('/docs-assistant/stream')
+async def stream(request: Request, body: ChatRequest, x_request_id: Optional[str] = Header(None)):
+    questions, question_context = validate_inputs(body.questions, body.question_context)
+    if not x_request_id:
+        x_request_id = ""
+    response_stream = retriever.stream_response(request.app.state, questions, x_request_id, question_context)
+    return StreamingResponse(response_stream, media_type='text/event-stream')
 
 @router.post('/docs-assistant/chat')
 async def chat(request: Request, body: ChatRequest, x_request_id: Optional[str] = Header(None)):
