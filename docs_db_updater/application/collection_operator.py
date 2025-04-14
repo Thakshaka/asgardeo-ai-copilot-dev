@@ -82,7 +82,7 @@ def update_collection(latest_release_tag, assets):
         utils.process_changes(added_modified, deleted, milvus_client, embed)
 
 def update_docs_db():
-    logger.info('Start the scheduler task')
+    logger.info('Starting the docs db updater task')
     has = milvus_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
     latest_release_tag, assets = utils.get_latest_release_data()
     if has:

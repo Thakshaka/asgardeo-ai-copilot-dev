@@ -22,7 +22,7 @@ def create_releases_collection(milvus_client):
     index_params.add_index(
         field_name=const.VECTOR,
         index_type="AUTOINDEX",
-        metric_type="COSINE" # Updated to match the collection metric type
+        metric_type="COSINE"
     )
 
     milvus_client.create_collection(
