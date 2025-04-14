@@ -1,5 +1,5 @@
-# Updater
+# Docs DB Updater
 python -m docs_db_updater.application.main
 
-# Retriever
+# Docs Assistant
 uvicorn docs_assistant.application.main:app --host 0.0.0.0 --port 5000
