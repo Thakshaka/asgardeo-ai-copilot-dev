@@ -2,21 +2,21 @@ name: Docs DB Updater
 
 on:
   schedule:
-    # Run every day at 3:00 PM UTC
-    - cron: '0 15 * * *'
+    # Run every day at 3:00 PM Colombo time (UTC+5:30)
+    - cron: '30 9 * * *'
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
   update-docs-db:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      
+
       - name: Build and run Docker image
         env:
           ZILLIZ_CLOUD_URI: ${{ secrets.ZILLIZ_CLOUD_URI }}
