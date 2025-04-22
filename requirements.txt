@@ -1,0 +1,8 @@
+langchain-community>=0.0.10
+langchain-openai>=0.0.2
+langchain>=0.0.335
+pymilvus>=2.3.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+markdownify>=0.11.6
+beautifulsoup4>=4.12.2

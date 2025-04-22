@@ -1,0 +1,39 @@
+name: Docs DB Updater
+
+on:
+  schedule:
+    # Run every day at 3:00 PM UTC
+    - cron: '0 15 * * *'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  update-docs-db:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build and run Docker image
+        env:
+          ZILLIZ_CLOUD_URI: ${{ secrets.ZILLIZ_CLOUD_URI }}
+          ZILLIZ_CLOUD_API_KEY: ${{ secrets.ZILLIZ_CLOUD_API_KEY }}
+          DOCS_COLLECTION: ${{ secrets.DOCS_COLLECTION }}
+          RELEASES_COLLECTION: ${{ secrets.RELEASES_COLLECTION }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          docker build -t docs-db-updater .
+          docker run --rm \
+            -e ZILLIZ_CLOUD_URI \
+            -e ZILLIZ_CLOUD_API_KEY \
+            -e DOCS_COLLECTION \
+            -e RELEASES_COLLECTION \
+            -e AZURE_OPENAI_ENDPOINT \
+            -e AZURE_OPENAI_API_KEY \
+            -e GITHUB_TOKEN \
+            docs-db-updater
