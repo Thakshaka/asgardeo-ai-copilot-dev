@@ -3,3 +3,7 @@ python -m docs_db_updater.application.main
 
 # Docs Assistant
 uvicorn docs_assistant.application.main:app --host 0.0.0.0 --port 5000
+
+# Copilot
+uvicorn app.main:app --host 0.0.0.0 --port 5001
+
