@@ -230,6 +230,8 @@ def compare_releases(last_updated_release_tag, latest_release_tag):
 
         return added + modified, deleted
     
+    # Remove temp extracted zip files after processing is complete
+    # This is to free up space when running locally
     finally:
         shutil.rmtree(last_updated_release_extract_path)
         logger.info(f"Removed temp extracted zip file {last_updated_release_extract_path}")
