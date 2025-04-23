@@ -76,10 +76,10 @@ def update_collection(latest_release_tag, assets):
             logger.info("Dropping and inserting the docs collection")
             return True
     if check_drop_collection():
-        insert_collection()
+        insert_collection(latest_release_tag, assets)
     else:
-        added_modified, deleted = utils.compare_releases(cache_history[const.LAST_UPDATED_RELEASE], latest_release_tag)
-        utils.process_changes(added_modified, deleted, milvus_client, embed)
+        added, modified, deleted = utils.compare_releases(cache_history[const.LAST_UPDATED_RELEASE], latest_release_tag)
+        utils.process_changes(added, modified, deleted, milvus_client, embed)
 
 def update_docs_db():
     logger.info('Starting the docs db updater task')

@@ -78,8 +78,11 @@ def add_records(filename, file_content, milvus_client, embed):
     milvus_client.insert(collection_name=os.environ.get(const.DOCS_COLLECTION), data=chunked_docs)
     return f"Successfully added {len(chunked_docs)} records from {filename}"
 
-def process_changes(added_modified, deleted, milvus_client, embed):
-    for filename, content in added_modified:
+def process_changes(added, modified, deleted, milvus_client, embed):
+    for filename, content in added:
+        msg = add_records(filename, content, milvus_client, embed)
+        logger.info(msg)
+    for filename, content in modified:
         msg = delete_records(filename, milvus_client)
         logger.info(msg)
         msg = add_records(filename, content, milvus_client, embed)
@@ -228,7 +231,7 @@ def compare_releases(last_updated_release_tag, latest_release_tag):
             if f not in latest_release_files:
                 deleted.append(filename)
 
-        return added + modified, deleted
+        return added, modified, deleted
     
     # Remove temp extracted zip files after processing is complete
     # This is to free up space when running locally
