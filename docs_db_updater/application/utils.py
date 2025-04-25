@@ -181,6 +181,8 @@ def get_release_assets(tag):
     return response.json().get("assets", [])
 
 def compare_releases(last_updated_release_tag, latest_release_tag):
+    logger.info(f"Comparing releases: {last_updated_release_tag} -> {latest_release_tag}")
+    
     last_updated_release_assets = get_release_assets(last_updated_release_tag)
     latest_release_assets = get_release_assets(latest_release_tag)
     
