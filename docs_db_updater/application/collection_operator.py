@@ -82,7 +82,7 @@ def update_collection(latest_release_tag, assets):
         utils.process_changes(added, modified, deleted, milvus_client, embed)
 
 def update_docs_db():
-    logger.info('Starting the docs db updater task')
+    logger.info('Starting docs db updater task')
     has = milvus_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
     latest_release_tag, assets = utils.get_latest_release_data()
     if has:
@@ -94,3 +94,4 @@ def update_docs_db():
     if not release_cache.check_collection_existence(milvus_client):
         release_cache.create_releases_collection(milvus_client)
     release_cache.update_last_updated_release(latest_release_tag, milvus_client)
+    logger.info('Docs db updater task completed successfully')

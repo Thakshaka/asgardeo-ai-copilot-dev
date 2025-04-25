@@ -91,6 +91,8 @@ def process_changes(added, modified, deleted, milvus_client, embed):
         msg = delete_records(filename, milvus_client)
         logger.info(msg)
 
+    logger.info(f"{len(added)} files added, {len(modified)} files modified, {len(deleted)} files deleted")
+
 def get_latest_release_data():
     url = f"https://api.github.com/repos/{const.REPO_NAME}/releases/latest"
     headers = {
