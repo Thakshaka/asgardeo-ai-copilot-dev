@@ -84,6 +84,7 @@ async def lifespan(app: FastAPI):
             },
         )
         if reranker_enabled:
+            logger.info("Creating reranker instance")
             reranker = CohereRerank(cohere_api_key=os.environ.get(const.COHERE_API_KEY),
                                     model=const.COHERE_MODEL, top_n=const.TOP_DOCS)
             retriever = db.as_retriever(search_kwargs={"k": const.K_NEIGHBOURS})
