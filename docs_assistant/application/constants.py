@@ -45,7 +45,7 @@ MAX_PROMPT_SIZE = 12000
 # ==============================
 ENABLED_RERANKER = "ENABLED_RERANKER"
 COHERE_API_KEY = "COHERE_API_KEY"
-COHERE_MODEL = "rerank-english-v2.0"
+COHERE_MODEL = "rerank-english-v3.0"
 TOP_DOCS = 10
 
 # ==============================
