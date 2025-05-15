@@ -1,0 +1,250 @@
+openapi: 3.1.3
+info:
+  title: Docs Assistant API
+  description: API for the Asgardeo Docs Assistant service
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /docs-assistant/chat:
+    post:
+      summary: Chat with the docs assistant
+      description: Send questions to the docs assistant and receive answers
+      operationId: chat
+      tags:
+        - docs-assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+          required: false
+          description: Optional request ID for tracking
+
+  /docs-assistant/stream:
+    post:
+      summary: Stream chat responses
+      description: Send questions to the docs assistant and receive streaming responses
+      operationId: streamChat
+      tags:
+        - docs-assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful streaming response
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+          required: false
+          description: Optional request ID for tracking
+
+  /docs-assistant/docs:
+    get:
+      summary: Get relevant documents
+      description: Retrieve documents relevant to a specific question
+      operationId: getDocs
+      tags:
+        - docs-assistant
+      parameters:
+        - in: query
+          name: question
+          schema:
+            type: string
+          required: true
+          description: The question to search for relevant documents
+        - in: query
+          name: count
+          schema:
+            type: integer
+            default: 0
+          required: false
+          description: Number of documents to return (0 for default)
+        - in: header
+          name: x-request-id
+          schema:
+            type: string
+          required: false
+          description: Optional request ID for tracking
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /liveness:
+    get:
+      summary: Check service liveness
+      description: Health check endpoint to verify the service is alive
+      operationId: checkLiveness
+      tags:
+        - health
+      responses:
+        '200':
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /readiness:
+    get:
+      summary: Check service readiness
+      description: Health check endpoint to verify the service is ready to accept requests
+      operationId: checkReadiness
+      tags:
+        - health
+      responses:
+        '200':
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - questions
+      properties:
+        questions:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          description: One or more questions to ask the docs assistant
+        question_context:
+          type: string
+          description: Optional context for the question
+      example:
+        questions: "How do I configure SSO in Asgardeo?"
+        question_context: "I'm trying to set up single sign-on for my application"
+
+    ChatResponse:
+      type: object
+      properties:
+        content:
+          type: string
+          description: The assistant's response
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+              description: Number of tokens in the prompt
+            completion_tokens:
+              type: integer
+              description: Number of tokens in the completion
+            total_tokens:
+              type: integer
+              description: Total number of tokens used
+      example:
+        content: "To configure SSO in Asgardeo, you need to..."
+        usage:
+          prompt_tokens: 150
+          completion_tokens: 200
+          total_tokens: 350
+
+    DocsResponse:
+      type: object
+      properties:
+        docs:
+          type: array
+          items:
+            type: object
+            properties:
+              page_content:
+                type: string
+                description: The content of the document
+              metadata:
+                type: object
+                description: Metadata about the document
+      example:
+        docs:
+          - page_content: "Single Sign-On (SSO) is a mechanism that allows users to authenticate once and gain access to multiple applications..."
+            metadata:
+              filename: "en/asgardeo/docs/guides/authentication/sso.md"
+              doc_link: "https://wso2.com/asgardeo/docs/guides/authentication/sso/"
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [UP, DOWN]
+          description: The health status of the service
+      example:
+        status: "UP"
+
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Error message
+      example:
+        detail: "Error while processing your request. Please try again later"
