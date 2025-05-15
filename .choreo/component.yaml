@@ -1,0 +1,126 @@
+# The configuration file schema version
+schemaVersion: 1.2
+
+# Component build configuration
+build:
+  # Using Docker build pack
+  buildPack: docker
+  # Docker build configuration
+  docker:
+    # Path to the Dockerfile
+    dockerfilePath: Dockerfile.docs-assistant
+  # Build environment variables
+  env:
+    - name: DOCKER_BUILDKIT
+      value: "1"
+
+# Incoming connection details for the component
+endpoints:
+  # Unique name for the endpoint
+  - name: docs-assistant-api
+    # Display name for the endpoint
+    displayName: Docs Assistant API
+    # Service section with endpoint details
+    service:
+      # Base path of the API
+      basePath: /
+      # Port that the service exposes
+      port: 5000
+    # Type of traffic the endpoint accepts
+    type: REST
+    # Network visibility of the endpoint
+    networkVisibilities:
+      - Public
+    # OpenAPI schema file path
+    schemaFilePath: "openapi.yaml"
+
+# Runtime configurations
+configurations:
+  # Environment variables for the component
+  env:
+    - name: AZURE_OPENAI_ENDPOINT
+      valueFrom:
+        configForm:
+          displayName: Azure OpenAI Endpoint
+          required: true
+          type: string
+    - name: AZURE_DEPLOYMENT_CHAT
+      valueFrom:
+        configForm:
+          displayName: Azure Deployment Chat
+          required: true
+          type: string
+    - name: AZURE_DEPLOYMENT_EMBEDDING
+      valueFrom:
+        configForm:
+          displayName: Azure Deployment Embedding
+          required: true
+          type: string
+    - name: OPENAI_API_VERSION
+      valueFrom:
+        configForm:
+          displayName: OpenAI API Version
+          required: true
+          type: string
+    - name: CP_AZURE_OPENAI_ENDPOINT
+      valueFrom:
+        configForm:
+          displayName: Copilot Azure OpenAI Endpoint
+          required: true
+          type: string
+    - name: CP_AZURE_OPENAI_API_KEY
+      valueFrom:
+        configForm:
+          displayName: Copilot Azure OpenAI API Key
+          required: true
+          type: secret
+    - name: ZILLIZ_CLOUD_URI
+      valueFrom:
+        configForm:
+          displayName: Zilliz Cloud URI
+          required: true
+          type: string
+    - name: ZILLIZ_CLOUD_API_KEY
+      valueFrom:
+        configForm:
+          displayName: Zilliz Cloud API Key
+          required: true
+          type: secret
+    - name: DOCS_COLLECTION
+      valueFrom:
+        configForm:
+          displayName: Docs Collection
+          required: true
+          type: string
+    - name: COLLECTION_NAME
+      valueFrom:
+        configForm:
+          displayName: Collection Name
+          required: true
+          type: string
+    - name: ENABLED_RERANKER
+      valueFrom:
+        configForm:
+          displayName: Enable Reranker
+          required: false
+          type: string
+    - name: COHERE_API_KEY
+      valueFrom:
+        configForm:
+          displayName: Cohere API Key
+          required: false
+          type: secret
+
+# Resource allocation
+resources:
+  cpu:
+    limit: "1.0"
+    request: "0.5"
+  memory:
+    limit: "1Gi"
+    request: "512Mi"
+
+# Scaling configuration
+scaling:
+  minReplicas: 1
+  maxReplicas: 3
