@@ -5,9 +5,11 @@ ZILLIZ_CLOUD_URI = "ZILLIZ_CLOUD_URI"
 ZILLIZ_CLOUD_API_KEY = "ZILLIZ_CLOUD_API_KEY"
 DOCS_COLLECTION = "DOCS_COLLECTION"
 RELEASES_COLLECTION = "RELEASES_COLLECTION"
+COMMITS_COLLECTION = "COMMITS_COLLECTION"
 AZURE_OPENAI_ENDPOINT = "AZURE_OPENAI_ENDPOINT"
 AZURE_OPENAI_API_KEY = "AZURE_OPENAI_API_KEY"
 GITHUB_TOKEN = "GITHUB_TOKEN"
+DOC_PROCESSING_MODE = "DOC_PROCESSING_MODE"
 
 # ==============================
 # GitHub Repository Configuration
@@ -25,7 +27,15 @@ PRODUCT = "Product"
 ASGARDEO = "Asgardeo"
 UPDATER_VERSION = "1.0"
 LAST_UPDATED_RELEASE = "last_updated_release"
+LAST_UPDATED_COMMIT = "last_updated_commit"
 LAST_UPDATER_VERSION = "last_updater_version"
+
+# ==============================
+# Document Processing Modes
+# ==============================
+RELEASE_MODE = "release"
+REPOSITORY_MODE = "repository"
+DEFAULT_PROCESSING_MODE = RELEASE_MODE
 
 # ==============================
 # File System and Paths

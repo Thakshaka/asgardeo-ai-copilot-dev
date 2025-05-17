@@ -23,9 +23,11 @@ jobs:
           ZILLIZ_CLOUD_API_KEY: ${{ secrets.ZILLIZ_CLOUD_API_KEY }}
           DOCS_COLLECTION: ${{ secrets.DOCS_COLLECTION }}
           RELEASES_COLLECTION: ${{ secrets.RELEASES_COLLECTION }}
+          COMMITS_COLLECTION: ${{ secrets.COMMITS_COLLECTION }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          DOC_PROCESSING_MODE: ${{ secrets.DOC_PROCESSING_MODE }}
         run: |
           docker build -t docs-db-updater .
           docker run --rm \
@@ -33,7 +35,9 @@ jobs:
             -e ZILLIZ_CLOUD_API_KEY \
             -e DOCS_COLLECTION \
             -e RELEASES_COLLECTION \
+            -e COMMITS_COLLECTION \
             -e AZURE_OPENAI_ENDPOINT \
             -e AZURE_OPENAI_API_KEY \
             -e GITHUB_TOKEN \
+            -e DOC_PROCESSING_MODE \
             docs-db-updater
