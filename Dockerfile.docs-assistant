@@ -12,12 +12,18 @@ COPY . .
 # Set environment variables
 ENV PYTHONPATH=/app
 
-# Create a non-root user and switch to it (using UID in Choreo's required range 10000-20000)
-RUN addgroup --system --gid 10001 appgroup && \
-    adduser --system --uid 10001 --gid 10001 appuser && \
-    chown -R appuser:appgroup /app
+# Create a non-root user and switch to it
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid 10014 \
+    "choreo" && \
+    chown -R 10014:10014 /app
 
-USER 10001
+USER 10014
 
 # Expose the port the app runs on
 EXPOSE 5000
