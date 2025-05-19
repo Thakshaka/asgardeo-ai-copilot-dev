@@ -226,10 +226,13 @@ def update_docs_db():
     processing_mode = os.environ.get(const.DOC_PROCESSING_MODE, const.DEFAULT_PROCESSING_MODE)
     logger.info(f"Using document processing mode: {processing_mode}")
 
-    has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
-
     # Determine which database type we're using
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
+
+    if db_type == "pgvector":
+        has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION_PGVECTOR))
+    else:
+        has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
 
     if processing_mode == const.REPOSITORY_MODE:
         # Repository-based approach
