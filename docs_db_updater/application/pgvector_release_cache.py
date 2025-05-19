@@ -50,14 +50,12 @@ def retrieve_last_updated_release(db_client):
     attempt = 0
     while attempt < retries:
         try:
-            # Use lowercase column names in the filter and output fields
             cached_release = db_client.query(
                 collection_name=os.environ.get(const.RELEASES_COLLECTION),
-                filter=f"'{const.PRODUCT}' = '{const.ASGARDEO}'",
+                filter=f"{const.PRODUCT} = '{const.ASGARDEO}'",
                 output_fields=["last_updated_release", "last_updater_version"]
             )
             if cached_release:
-                # Map the lowercase column names back to the constant keys for consistency
                 return {
                     const.LAST_UPDATED_RELEASE: cached_release[0]["last_updated_release"],
                     const.LAST_UPDATER_VERSION: cached_release[0]["last_updater_version"]

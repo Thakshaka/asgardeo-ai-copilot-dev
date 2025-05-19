@@ -53,7 +53,7 @@ def retrieve_last_updated_commit(db_client):
             # Use lowercase column names in the filter and output fields
             cached_commit = db_client.query(
                 collection_name=os.environ.get(const.COMMITS_COLLECTION),
-                filter=f"'{const.PRODUCT}' = '{const.ASGARDEO}'",
+                filter=f"{const.PRODUCT} = '{const.ASGARDEO}'",
                 output_fields=["last_updated_commit", "last_updater_version"]
             )
             if cached_commit:
