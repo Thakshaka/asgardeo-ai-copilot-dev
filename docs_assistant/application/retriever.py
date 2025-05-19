@@ -29,7 +29,7 @@ async def get_docs(state, questions, count, x_request_id):
     except Exception as e:
         logger.error(f"Error while retrieving the docs: {e}, id = {x_request_id}")
         return []
-    
+
 async def get_chat_prompt(state, questions, count, x_request_id, question_context):
     user_prompt_template = state.user_prompt_template
     encodings = state.encodings
@@ -49,7 +49,7 @@ async def get_chat_prompt(state, questions, count, x_request_id, question_contex
     user_prompt = user_prompt_template % (str(cleaned_questions), str(question_context), docs_content.strip())
 
     return user_prompt
-    
+
 async def bulk_response(state, questions, x_request_id, question_context):
     llm, encodings = state.llm, state.encodings
     system_prompt = state.system_prompt
@@ -89,4 +89,3 @@ async def stream_response(state, questions, x_request_id, question_context):
         logger.error(f"Error while generating llm response: {e}, id = {x_request_id}")
         answer = "Error while processing your request. Please try again later"
         raise HTTPException(status_code=500, detail=answer)
-    

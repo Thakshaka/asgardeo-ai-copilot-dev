@@ -9,9 +9,10 @@ from fastapi.logger import logger
 from langchain_openai import AzureChatOpenAI
 from langchain_openai import AzureOpenAIEmbeddings
 from docs_assistant.application.milvus_proxy import MilvusProxy
-from langchain_community.vectorstores import Milvus
+from langchain_community.vectorstores import Milvus, PGVector
 from docs_assistant.application import constants as const
 from docs_assistant.application.service import router
+from docs_assistant.application.vector_store_factory import get_vector_store
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -62,27 +63,8 @@ async def lifespan(app: FastAPI):
             openai_api_key=os.environ.get(const.CP_AZURE_OPENAI_API_KEY)
         )
 
-        # db = MilvusProxy(
-        #     embeddings=embeddings,
-        #     proxy_connection={
-        #         "uri": os.getenv(const.PROXY_URL),
-        #         "token": os.getenv(const.PROXY_TOKEN),
-        #     },
-        #     collection_name=os.environ.get(const.COLLECTION_NAME),
-        #     org_id=os.getenv('ORGANIZATION_ID'),
-        #     client_id=os.getenv('PROXY_CONSUMER_KEY'),
-        #     client_secret=os.getenv('PROXY_CONSUMER_SECRET'),
-        #     token_endpoint=os.getenv('ASGARDEO_TOKEN_ENDPOINT')
-        # )
-        db = Milvus(
-            collection_name=os.environ.get(const.DOCS_COLLECTION),
-            embedding_function=embeddings,
-            connection_args={
-                "uri": os.environ.get(const.ZILLIZ_CLOUD_URI),
-                "token": os.environ.get(const.ZILLIZ_CLOUD_API_KEY),
-                "secure": True,
-            },
-        )
+        # Use the vector store factory to get the appropriate vector store
+        db = get_vector_store(embeddings)
         if reranker_enabled:
             logger.info("Creating reranker instance")
             reranker = CohereRerank(cohere_api_key=os.environ.get(const.COHERE_API_KEY),
