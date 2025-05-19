@@ -17,8 +17,8 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-embed = AzureOpenAIEmbeddings(azure_deployment=const.ASGARDEO_AI_EMBEDDING,
-                              openai_api_version=const.DEPLOYMENT_VERSION,
+embed = AzureOpenAIEmbeddings(azure_deployment=os.environ.get(const.ASGARDEO_AI_EMBEDDING),
+                              openai_api_version=os.environ.get(const.DEPLOYMENT_VERSION),
                               azure_endpoint=os.environ.get(const.AZURE_OPENAI_ENDPOINT),
                               openai_api_key=os.environ.get(const.AZURE_OPENAI_API_KEY))
 
@@ -29,7 +29,7 @@ def insert_collection(latest_release_tag, assets):
     """
     Insert documents from release assets into the collection.
     """
-    asset = next((a for a in assets if a["name"].startswith("asgardeo-docs")), None)
+    asset = next((a for a in assets if a["name"].startswith(os.environ.get(const.ASSET_NAME))), None)
 
     if not asset:
         return
@@ -37,7 +37,7 @@ def insert_collection(latest_release_tag, assets):
     logger.info(f"Latest release tag: {latest_release_tag}")
 
     docs = utils.get_chunked_docs(asset, embed)
-    batch_size = const.BATCH_SIZE
+    batch_size = os.environ.get(const.BATCH_SIZE)
 
     # Determine which database type we're using
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
@@ -73,7 +73,7 @@ def insert_collection(latest_release_tag, assets):
                 embed,
                 drop_old=(i == 0),
                 collection_name=os.environ.get(const.DOCS_COLLECTION),
-                metadata_field=const.ASGARDEO_METADATA,
+                metadata_field=os.environ.get(const.ASGARDEO_METADATA),
                 connection_args={
                     "uri": os.environ.get(const.ZILLIZ_CLOUD_URI),
                     "token": os.environ.get(const.ZILLIZ_CLOUD_API_KEY),
@@ -85,7 +85,7 @@ def update_collection(latest_release_tag, assets):
     """
     Update the collection with changes from the latest release.
     """
-    asset = next((a for a in assets if a["name"].startswith("asgardeo-docs")), None)
+    asset = next((a for a in assets if a["name"].startswith(os.environ.get(const.ASSET_NAME))), None)
 
     # Use the appropriate cache module based on the database type
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
@@ -131,7 +131,7 @@ def insert_repo_collection():
     """
     filenames = utils.load_md_files_from_repo()
     docs = utils.get_chunked_docs_from_repo(filenames, embed)
-    batch_size = const.BATCH_SIZE
+    batch_size = os.environ.get(const.BATCH_SIZE)
 
     # Determine which database type we're using
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
@@ -167,7 +167,7 @@ def insert_repo_collection():
                 embed,
                 drop_old=(i == 0),
                 collection_name=os.environ.get(const.DOCS_COLLECTION),
-                metadata_field=const.ASGARDEO_METADATA,
+                metadata_field=os.environ.get(const.ASGARDEO_METADATA),
                 connection_args={
                     "uri": os.environ.get(const.ZILLIZ_CLOUD_URI),
                     "token": os.environ.get(const.ZILLIZ_CLOUD_API_KEY),
@@ -230,7 +230,7 @@ def update_docs_db():
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
 
     if db_type == "pgvector":
-        has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION_PGVECTOR))
+        has = db_client.has_collection(collection_name=os.environ.get(const.EMBEDDINGS_COLLECTION_PGVECTOR))
     else:
         has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
 

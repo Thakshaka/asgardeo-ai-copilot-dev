@@ -31,15 +31,15 @@ def create_formatted_chunk(chunk, file_name, doc_link, embed):
     """
     Create a formatted chunk with metadata for vector storage.
     """
-    formatted_chunk = {const.ASGARDEO_METADATA: {}}
-    formatted_chunk[const.ASGARDEO_METADATA][const.FILE_NAME] = file_name
-    formatted_chunk[const.ASGARDEO_METADATA][const.DOC_LINK] = doc_link
+    formatted_chunk = {os.environ.get(const.ASGARDEO_METADATA): {}}
+    formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.FILE_NAME] = file_name
+    formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.DOC_LINK] = doc_link
     if const.HEADER3 in chunk.metadata.keys():
-        formatted_chunk[const.ASGARDEO_METADATA][const.HEADER3] = chunk.metadata[const.HEADER3]
+        formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.HEADER3] = chunk.metadata[const.HEADER3]
     if const.HEADER2 in chunk.metadata.keys():
-        formatted_chunk[const.ASGARDEO_METADATA][const.HEADER2] = chunk.metadata[const.HEADER2]
+        formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.HEADER2] = chunk.metadata[const.HEADER2]
     if const.HEADER1 in chunk.metadata.keys():
-        formatted_chunk[const.ASGARDEO_METADATA][const.HEADER1] = chunk.metadata[const.HEADER1]
+        formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.HEADER1] = chunk.metadata[const.HEADER1]
     formatted_chunk[const.TEXT] = chunk.page_content
     formatted_chunk[const.VECTOR] = embed.embed_query(chunk.page_content)
     return formatted_chunk
@@ -56,11 +56,11 @@ def chunk_docs(file_name, file_content, embed, update=False):
             suffix = text_to_anchor(chunk.metadata[const.HEADER3])
         elif const.HEADER2 in chunk.metadata.keys():
             suffix = text_to_anchor(chunk.metadata[const.HEADER2])
-        doc_link = const.WEB_PATH+file_name[len(const.DOC_PATH):-3]+"/"+suffix
+        doc_link = os.environ.get(const.WEB_PATH)+file_name[len(os.environ.get(const.DOC_PATH)):-3]+"/"+suffix
         chunk.metadata[const.FILE_NAME] = file_name
         chunk.metadata[const.DOC_LINK] = doc_link
-        chunk.page_content = chunk.page_content.replace("../../", f"{const.WEB_PATH}")
-        chunk.page_content = chunk.page_content.replace("../", f"{const.WEB_PATH}")
+        chunk.page_content = chunk.page_content.replace("../../", f"{os.environ.get(const.WEB_PATH)}")
+        chunk.page_content = chunk.page_content.replace("../", f"{os.environ.get(const.WEB_PATH)}")
         chunk.page_content = chunk.page_content.replace(".md", "")
         chunk.page_content = chunk.page_content.replace("{.cInlineImage-full}", "")
         header1_text = '#' + chunk.metadata[const.HEADER1] if const.HEADER1 in chunk.metadata.keys() else ''
@@ -79,7 +79,7 @@ def delete_records(filename, milvus_client):
     """
     primary_keys = []
     filtered_records = milvus_client.query(collection_name=os.environ.get(const.DOCS_COLLECTION),
-                                           filter=f"{const.ASGARDEO_METADATA}['{const.FILE_NAME}'] == '{filename}'",
+                                           filter=f"{os.environ.get(const.ASGARDEO_METADATA)}['{const.FILE_NAME}'] == '{filename}'",
                                            output_fields=["pk"])
     for filtered_record in filtered_records:
         primary_keys.append(filtered_record["pk"])
@@ -116,7 +116,7 @@ def get_latest_release_data():
     """
     Get the latest release tag and assets from the repository.
     """
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/releases/latest"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/releases/latest"
     headers = {
         const.AUTHORIZATION: f'token {os.environ.get("GITHUB_TOKEN")}',
         const.ACCEPT: "application/vnd.github.v3+json"
@@ -186,7 +186,7 @@ def get_chunked_docs(asset, embed):
                 file_path = os.path.join(root, file)
 
                 rel_path = os.path.relpath(file_path, temp_dir)
-                if rel_path.replace(os.path.sep, "/") in const.IGNORE_REL_PATHS:
+                if rel_path.replace(os.path.sep, "/") in os.environ.get(const.IGNORE_REL_PATHS, ()):
                     continue
 
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -212,7 +212,7 @@ def get_release_assets(tag):
     """
     Get assets from a specific release tag.
     """
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/releases/tags/{tag}"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/releases/tags/{tag}"
     headers = {const.AUTHORIZATION: f'token {os.environ.get("GITHUB_TOKEN")}',
                const.ACCEPT: "application/vnd.github.v3+json"}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
@@ -243,13 +243,13 @@ def compare_releases(last_updated_release_tag, latest_release_tag):
             os.path.relpath(os.path.join(dp, f), last_updated_release_extract_path): hash_file(os.path.join(dp, f))
             for dp, _, filenames in os.walk(last_updated_release_extract_path)
             for f in filenames
-            if f.endswith(".html") and f.replace(os.path.sep, "/") not in const.IGNORE_REL_PATHS
+            if f.endswith(".html") and f.replace(os.path.sep, "/") not in os.environ.get(const.IGNORE_REL_PATHS, ())
         }
         latest_release_files = {
             os.path.relpath(os.path.join(dp, f), latest_release_extract_path): hash_file(os.path.join(dp, f))
             for dp, _, filenames in os.walk(latest_release_extract_path)
             for f in filenames
-            if f.endswith(".html") and f.replace(os.path.sep, "/") not in const.IGNORE_REL_PATHS
+            if f.endswith(".html") and f.replace(os.path.sep, "/") not in os.environ.get(const.IGNORE_REL_PATHS, ())
         }
 
         added, modified, deleted = [], [], []
@@ -296,7 +296,7 @@ def retrieve_content(filename):
     """
     Retrieve the content of a file from the repository.
     """
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/contents/{filename}?ref={const.BRANCH}"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/contents/{filename}?ref={os.environ.get(const.BRANCH)}"
     headers = {const.AUTHORIZATION: f'token {os.environ.get(const.GITHUB_TOKEN)}',
                const.ACCEPT: 'application/vnd.github.v3.raw'}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
@@ -313,14 +313,14 @@ def load_md_files_from_repo():
     """
     Load all markdown files from the repository.
     """
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/git/trees/{const.BRANCH}?recursive=1"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/git/trees/{os.environ.get(const.BRANCH)}?recursive=1"
     headers = {const.AUTHORIZATION: f'token {os.environ.get(const.GITHUB_TOKEN)}',
                const.ACCEPT: 'application/vnd.github.v3+json'}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
     response.raise_for_status()
     file_names = [item[const.PATH] for item in response.json().get(const.TREE, [])
-                  if item[const.PATH].endswith(const.MD_FORMAT) and const.MAIN_DIR in item[const.PATH] and
-                  not any(ignore_file in item[const.PATH] for ignore_file in const.IGNORE_FILES)]
+                  if item[const.PATH].endswith(const.MD_FORMAT) and os.environ.get(const.MAIN_DIR) in item[const.PATH] and
+                  not any(ignore_file in item[const.PATH] for ignore_file in os.environ.get(const.IGNORE_FILES, []))]
     return file_names
 
 def get_chunked_docs_from_repo(filenames, embed):
@@ -338,7 +338,7 @@ def get_latest_commit():
     """
     Get the latest commit SHA from the repository.
     """
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/branches/{const.BRANCH}"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/branches/{os.environ.get(const.BRANCH)}"
     headers = {const.AUTHORIZATION: f'token {os.environ.get(const.GITHUB_TOKEN)}',
                const.ACCEPT: 'application/vnd.github.v3+json'}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
@@ -349,7 +349,7 @@ def compare_commits(base_sha, head_sha):
     """
     Compare two commits and return the files that have changed.
     """
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/compare/{base_sha}...{head_sha}"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/compare/{base_sha}...{head_sha}"
     headers = {const.AUTHORIZATION: f'token {os.environ.get(const.GITHUB_TOKEN)}',
                const.ACCEPT: 'application/vnd.github.v3+json'}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
@@ -363,9 +363,9 @@ def get_diff_from_commits(files):
     added = []
     deleted = []
     for file in files:
-        if any(ignore_file in file[const.FILE_NAME] for ignore_file in const.IGNORE_FILES):
+        if any(ignore_file in file[const.FILE_NAME] for ignore_file in os.environ.get(const.IGNORE_FILES)):
             continue
-        if const.MAIN_DIR in file[const.FILE_NAME] and file[const.FILE_NAME].endswith('.md'):
+        if os.environ.get(const.MAIN_DIR) in file[const.FILE_NAME] and file[const.FILE_NAME].endswith('.md'):
             if file['status'] in ['added', 'modified']:
                 added.append(file[const.FILE_NAME])
             elif file['status'] == 'removed':

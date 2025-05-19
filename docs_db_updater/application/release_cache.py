@@ -46,7 +46,7 @@ def retrieve_last_updated_release(milvus_client):
         try:
             cached_release = milvus_client.query(
                 collection_name=os.environ.get(const.RELEASES_COLLECTION),
-                filter=f"{const.PRODUCT} == '{const.ASGARDEO}'",
+                filter=f"{const.PRODUCT} == '{os.environ.get(const.PRODUCT_NAME)}'",
                 output_fields=[const.LAST_UPDATED_RELEASE, const.LAST_UPDATER_VERSION]
             )
             if cached_release:
@@ -66,7 +66,7 @@ def update_last_updated_release(latest_release_tag, milvus_client):
     random.seed(0)
     dummy_vector = [random.random() for _ in range(1536)]
     payload = {
-        const.PRODUCT: const.ASGARDEO,
+        const.PRODUCT: os.environ.get(const.PRODUCT_NAME),
         const.VECTOR: dummy_vector,
         const.LAST_UPDATED_RELEASE: latest_release_tag,
         const.LAST_UPDATER_VERSION: const.UPDATER_VERSION

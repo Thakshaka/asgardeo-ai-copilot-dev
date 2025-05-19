@@ -32,8 +32,8 @@ def delete_records(filename, db_client):
         def _delete_records_func(conn, filename):
             nonlocal primary_keys
             with conn.cursor() as cursor:
-                # Use DOCS_COLLECTION_PGVECTOR for pgvector
-                collection_name = os.environ.get(const.DOCS_COLLECTION_PGVECTOR)
+                # Use EMBEDDINGS_COLLECTION_PGVECTOR for pgvector
+                collection_name = os.environ.get(const.EMBEDDINGS_COLLECTION_PGVECTOR)
                 cursor.execute(
                     f"SELECT collection_id FROM {collection_name} WHERE cmetadata->>'filename' = %s",
                     (filename,)
@@ -62,7 +62,7 @@ def delete_records(filename, db_client):
         primary_keys = []
         filtered_records = db_client.query(
             collection_name=os.environ.get(const.DOCS_COLLECTION),
-            filter=f"{const.ASGARDEO_METADATA}['{const.FILE_NAME}'] == '{filename}'",
+            filter=f"{os.environ.get(const.ASGARDEO_METADATA)}['{const.FILE_NAME}'] == '{filename}'",
             output_fields=["pk"]
         )
         for filtered_record in filtered_records:
@@ -113,7 +113,7 @@ def add_records(filename, file_content, db_client, embed):
         from langchain_core.documents import Document
         documents = []
         for chunk in chunked_docs:
-            metadata = chunk[const.ASGARDEO_METADATA]
+            metadata = chunk[os.environ.get(const.ASGARDEO_METADATA)]
             text = chunk[const.TEXT]
             documents.append(Document(page_content=text, metadata=metadata))
 
@@ -121,7 +121,7 @@ def add_records(filename, file_content, db_client, embed):
         PGVector.from_documents(
             documents,
             embed,
-            collection_name=os.environ.get(const.DOCS_COLLECTION_PGVECTOR),
+            collection_name=os.environ.get(const.EMBEDDINGS_COLLECTION_PGVECTOR),
             connection_string=connection_string,
         )
     else:

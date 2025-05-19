@@ -57,13 +57,21 @@ def get_vector_store(embedding_function):
             connection_string=connection_string,
         )
     else:
-        logger.warning(f"Unknown database type: {db_type}. Falling back to Milvus.")
-        return Milvus(
+        logger.warning(f"Unknown database type: {db_type}. Falling back to PGVector.")
+
+        if os.environ.get(const.PGVECTOR_CONNECTION_STRING):
+            connection_string = os.environ.get(const.PGVECTOR_CONNECTION_STRING)
+        else:
+            # Build connection string from individual parameters
+            host = os.environ.get(const.PGVECTOR_HOST, "localhost")
+            port = os.environ.get(const.PGVECTOR_PORT, "5432")
+            database = os.environ.get(const.PGVECTOR_DATABASE, "postgres")
+            user = os.environ.get(const.PGVECTOR_USER, "postgres")
+            password = os.environ.get(const.PGVECTOR_PASSWORD, "postgres")
+            connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database}"
+            
+        return PGVector(
             collection_name=os.environ.get(const.DOCS_COLLECTION),
             embedding_function=embedding_function,
-            connection_args={
-                "uri": os.environ.get(const.ZILLIZ_CLOUD_URI),
-                "token": os.environ.get(const.ZILLIZ_CLOUD_API_KEY),
-                "secure": True,
-            },
+            connection_string=connection_string
         )

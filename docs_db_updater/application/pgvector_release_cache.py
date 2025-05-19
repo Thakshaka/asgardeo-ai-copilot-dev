@@ -52,7 +52,7 @@ def retrieve_last_updated_release(db_client):
         try:
             cached_release = db_client.query(
                 collection_name=os.environ.get(const.RELEASES_COLLECTION),
-                filter=f"{const.PRODUCT} = '{const.ASGARDEO}'",
+                filter=f"{const.PRODUCT} = '{os.environ.get(const.PRODUCT_NAME)}'",
                 output_fields=["last_updated_release", "last_updater_version"]
             )
             if cached_release:
@@ -77,7 +77,7 @@ def update_last_updated_release(latest_release_tag, db_client):
 
     # Create payload with lowercase keys to match PostgreSQL column names
     payload = {
-        "product": const.ASGARDEO,
+        "product": os.environ.get(const.PRODUCT_NAME),
         "vector": dummy_vector,
         "last_updated_release": latest_release_tag,
         "last_updater_version": const.UPDATER_VERSION

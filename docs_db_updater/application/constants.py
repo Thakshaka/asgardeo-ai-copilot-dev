@@ -1,6 +1,3 @@
-# ==============================
-# Environment Variables
-# ==============================
 # Vector Database Type
 VECTOR_DB_TYPE = "VECTOR_DB_TYPE"
 DEFAULT_VECTOR_DB_TYPE = "pgvector"
@@ -19,9 +16,10 @@ PGVECTOR_PASSWORD = "PGVECTOR_PASSWORD"
 
 # Collection Names
 DOCS_COLLECTION = "DOCS_COLLECTION"
-DOCS_COLLECTION_PGVECTOR = "DOCS_COLLECTION_PGVECTOR"
 RELEASES_COLLECTION = "RELEASES_COLLECTION"
 COMMITS_COLLECTION = "COMMITS_COLLECTION"
+EMBEDDINGS_COLLECTION_PGVECTOR = "EMBEDDINGS_COLLECTION_PGVECTOR"
+ASSET_NAME = "ASSET_NAME"
 
 # Azure OpenAI
 AZURE_OPENAI_ENDPOINT = "AZURE_OPENAI_ENDPOINT"
@@ -29,49 +27,39 @@ AZURE_OPENAI_API_KEY = "AZURE_OPENAI_API_KEY"
 GITHUB_TOKEN = "GITHUB_TOKEN"
 DOC_PROCESSING_MODE = "DOC_PROCESSING_MODE"
 
-# ==============================
 # GitHub Repository Configuration
-# ==============================
-REPO_NAME = "wso2/docs-is"  # changed to wso2/docs-is
-BRANCH = "master"  # changed to master
+REPO_NAME = "REPO_NAME"
+BRANCH = "BRANCH"
 AUTHORIZATION = "Authorization"
 ACCEPT = "Accept"
 TIMEOUT = (10, 60)
 
-# ==============================
 # Product Information
-# ==============================
 PRODUCT = "product"
-ASGARDEO = "Asgardeo"
+PRODUCT_NAME = "PRODUCT_NAME"
 UPDATER_VERSION = "1.0"
 LAST_UPDATED_RELEASE = "last_updated_release"
 LAST_UPDATED_COMMIT = "last_updated_commit"
 LAST_UPDATER_VERSION = "last_updater_version"
 
-# ==============================
 # Document Processing Modes
-# ==============================
 RELEASE_MODE = "release"
 REPOSITORY_MODE = "repository"
 DEFAULT_PROCESSING_MODE = RELEASE_MODE
 
-# ==============================
 # File System and Paths
-# ==============================
 PATH = "path"
 TREE = "tree"
 FILE_NAME = "filename"
 MD_FORMAT = ".md"
-MAIN_DIR = "en/asgardeo/"  # changed to en/asgardeo
-DOC_PATH = "en/asgardeo/docs/"  # changed to en/asgardeo/docs
-WEB_PATH = "https://wso2.com/asgardeo/docs/"  # changed to asgardeo
+MAIN_DIR = "MAIN_DIR"
+DOC_PATH = "DOC_PATH"
+WEB_PATH = "WEB_PATH"
 DOC_LINK = "doc_link"
-IGNORE_FILES = ['vs-code', 'index', 'page-not-found', 'asgardeo-cli']  # changed to asgardeo-cli
-IGNORE_REL_PATHS = ("out-prod/asgardeo/docs/index.html", "out-prod/asgardeo/docs/404.html")
+IGNORE_FILES = "IGNORE_FILES"
+IGNORE_REL_PATHS = "IGNORE_REL_PATHS"
 
-# ==============================
 # Document Processing
-# ==============================
 headers_to_split_on = [
     ("#", "Header1"),
     ("##", "Header2"),
@@ -82,12 +70,10 @@ HEADER2 = "Header2"
 HEADER3 = "Header3"
 TEXT = "text"
 
-# ==============================
 # Vector Database and AI
-# ==============================
-ASGARDEO_METADATA = "AsgardeoMetadata"
-ASGARDEO_AI_EMBEDDING = "ada"
-DEPLOYMENT_VERSION = "2025-01-01-preview"
+ASGARDEO_METADATA = "ASGARDEO_METADATA"
+ASGARDEO_AI_EMBEDDING = "ASGARDEO_AI_EMBEDDING"
+DEPLOYMENT_VERSION = "DEPLOYMENT_VERSION"
 VECTOR = "vector"
 STATUS = "status"
-BATCH_SIZE = 200
+BATCH_SIZE = "BATCH_SIZE"

@@ -50,15 +50,15 @@ async def lifespan(app: FastAPI):
     Information from docs:%s"""
     try:
         llm = AzureChatOpenAI(
-            azure_deployment=os.environ.get(const.AZURE_DEPLOYMENT_CHAT, const.DEFAULT_AZURE_DEPLOYMENT_CHAT),
-            openai_api_version=os.environ.get(const.OPENAI_API_VERSION, const.DEFAULT_OPENAI_API_VERSION),
+            azure_deployment=os.environ.get(const.AZURE_DEPLOYMENT_CHAT, os.environ.get(const.DEFAULT_AZURE_DEPLOYMENT_CHAT)),
+            openai_api_version=os.environ.get(const.OPENAI_API_VERSION, os.environ.get(const.DEFAULT_OPENAI_API_VERSION)),
             azure_endpoint=os.environ.get(const.AZURE_OPENAI_ENDPOINT)
         )
-        encodings = tiktoken.encoding_for_model(const.GPT_MODEL_NAME)
+        encodings = tiktoken.encoding_for_model(os.environ.get(const.GPT_MODEL_NAME))
         logger.info("Creating LLM instance")
         embeddings = AzureOpenAIEmbeddings(
-            azure_deployment=os.environ.get(const.AZURE_DEPLOYMENT_EMBEDDING, const.DEFAULT_AZURE_DEPLOYMENT_EMBEDDING),
-            openai_api_version=os.environ.get(const.OPENAI_API_VERSION, const.DEFAULT_OPENAI_API_VERSION),
+            azure_deployment=os.environ.get(const.AZURE_DEPLOYMENT_EMBEDDING, os.environ.get(const.DEFAULT_AZURE_DEPLOYMENT_EMBEDDING)),
+            openai_api_version=os.environ.get(const.OPENAI_API_VERSION, os.environ.get(const.DEFAULT_OPENAI_API_VERSION)),
             azure_endpoint=os.environ.get(const.CP_AZURE_OPENAI_ENDPOINT),
             openai_api_key=os.environ.get(const.CP_AZURE_OPENAI_API_KEY)
         )

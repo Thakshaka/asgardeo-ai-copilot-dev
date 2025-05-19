@@ -100,7 +100,7 @@ def hash_file(file_path):
     return hasher.hexdigest()
 
 def get_latest_release_data():
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/releases/latest"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/releases/latest"
     headers = {const.AUTHORIZATION: f'token {os.environ.get("GITHUB_TOKEN")}',
                const.ACCEPT: "application/vnd.github.v3+json"}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
@@ -126,13 +126,13 @@ def compare_releases(last_updated_release_tag, latest_release_tag):
         os.path.relpath(os.path.join(dp, f), last_updated_release_extract_path): hash_file(os.path.join(dp, f))
         for dp, _, filenames in os.walk(last_updated_release_extract_path)
         for f in filenames
-        if f.endswith(".html") and f.replace(os.path.sep, "/") not in const.IGNORE_REL_PATHS
+        if f.endswith(".html") and f.replace(os.path.sep, "/") not in os.environ.get(const.IGNORE_REL_PATHS, ())
     }
     latest_release_files = {
         os.path.relpath(os.path.join(dp, f), latest_release_extract_path): hash_file(os.path.join(dp, f))
         for dp, _, filenames in os.walk(latest_release_extract_path)
         for f in filenames
-        if f.endswith(".html") and f.replace(os.path.sep, "/") not in const.IGNORE_REL_PATHS
+        if f.endswith(".html") and f.replace(os.path.sep, "/") not in os.environ.get(const.IGNORE_REL_PATHS, ())
     }
     
     added = []
@@ -182,7 +182,7 @@ def compare_releases(last_updated_release_tag, latest_release_tag):
     return {"added": added, "modified": modified, "deleted": deleted, "len_added": len(added), "len_modified": len(modified), "len_deleted": len(deleted)}
 
 def get_release_assets(tag):
-    url = f"https://api.github.com/repos/{const.REPO_NAME}/releases/tags/{tag}"
+    url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/releases/tags/{tag}"
     headers = {const.AUTHORIZATION: f'token {os.environ.get("GITHUB_TOKEN")}',
                const.ACCEPT: "application/vnd.github.v3+json"}
     response = requests.get(url, headers=headers, timeout=const.TIMEOUT)
@@ -233,7 +233,7 @@ if latest_release_tag is not last_updated_release_tag and latest_release_assets[
 #             logger.info(f"Removed temp file {temp_path}")
 
 # def get_latest_release_data():
-#     url = f"https://api.github.com/repos/{const.REPO_NAME}/releases/latest"
+#     url = f"https://api.github.com/repos/{os.environ.get(const.REPO_NAME)}/releases/latest"
 #     headers = {
 #         const.AUTHORIZATION: f'token {os.environ.get("GITHUB_TOKEN")}',
 #         const.ACCEPT: "application/vnd.github.v3+json"

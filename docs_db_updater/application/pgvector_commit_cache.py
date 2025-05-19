@@ -53,7 +53,7 @@ def retrieve_last_updated_commit(db_client):
             # Use lowercase column names in the filter and output fields
             cached_commit = db_client.query(
                 collection_name=os.environ.get(const.COMMITS_COLLECTION),
-                filter=f"{const.PRODUCT} = '{const.ASGARDEO}'",
+                filter=f"{const.PRODUCT} = '{os.environ.get(const.PRODUCT_NAME)}'",
                 output_fields=["last_updated_commit", "last_updater_version"]
             )
             if cached_commit:
@@ -79,7 +79,7 @@ def update_last_updated_commit(commit_sha, db_client):
 
     # Create payload with lowercase keys to match PostgreSQL column names
     payload = {
-        "product": const.ASGARDEO,
+        "product": os.environ.get(const.PRODUCT_NAME),
         "vector": dummy_vector,
         "last_updated_commit": commit_sha,
         "last_updater_version": const.UPDATER_VERSION

@@ -1,6 +1,3 @@
-# ==============================
-# Environment Variables
-# ==============================
 # Azure OpenAI
 AZURE_OPENAI_ENDPOINT = "AZURE_OPENAI_ENDPOINT"
 AZURE_DEPLOYMENT_CHAT = "AZURE_DEPLOYMENT_CHAT"
@@ -38,30 +35,22 @@ PROXY_CONSUMER_SECRET = "PROXY_CONSUMER_SECRET"
 # Authentication
 ASGARDEO_TOKEN_ENDPOINT = "ASGARDEO_TOKEN_ENDPOINT"
 
-# ==============================
-# Default Values
-# ==============================
-DEFAULT_AZURE_DEPLOYMENT_CHAT = "gpt-4o-2024-11-20"
-DEFAULT_OPENAI_API_VERSION = "2025-01-01-preview"
-DEFAULT_AZURE_DEPLOYMENT_EMBEDDING = "ada"
-GPT_MODEL_NAME = "gpt-4o"
+# Azure Configuration
+DEFAULT_AZURE_DEPLOYMENT_CHAT = "DEFAULT_AZURE_DEPLOYMENT_CHAT"
+DEFAULT_OPENAI_API_VERSION = "DEFAULT_OPENAI_API_VERSION"
+DEFAULT_AZURE_DEPLOYMENT_EMBEDDING = "DEFAULT_AZURE_DEPLOYMENT_EMBEDDING"
+GPT_MODEL_NAME = "GPT_MODEL_NAME"
 
-# ==============================
 # Retrieval Configuration
-# ==============================
 K_NEIGHBOURS = 20
 MAX_PROMPT_SIZE = 12000
 
-# ==============================
 # Reranker Configuration
-# ==============================
 ENABLED_RERANKER = "ENABLED_RERANKER"
 COHERE_API_KEY = "COHERE_API_KEY"
 COHERE_MODEL = "rerank-english-v3.0"
 TOP_DOCS = 10
 
-# ==============================
 # Chat Message Types
-# ==============================
 SYSTEM = "system"
 USER = "user"
