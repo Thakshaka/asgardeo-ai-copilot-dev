@@ -40,7 +40,7 @@ TIMEOUT = (10, 60)
 # ==============================
 # Product Information
 # ==============================
-PRODUCT = "Product"
+PRODUCT = "product"
 ASGARDEO = "Asgardeo"
 UPDATER_VERSION = "1.0"
 LAST_UPDATED_RELEASE = "last_updated_release"

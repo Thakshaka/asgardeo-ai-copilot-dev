@@ -53,7 +53,7 @@ def retrieve_last_updated_release(db_client):
             # Use lowercase column names in the filter and output fields
             cached_release = db_client.query(
                 collection_name=os.environ.get(const.RELEASES_COLLECTION),
-                filter=f"product = '{const.ASGARDEO}'",
+                filter=f"'{const.PRODUCT}' = '{const.ASGARDEO}'",
                 output_fields=["last_updated_release", "last_updater_version"]
             )
             if cached_release:
