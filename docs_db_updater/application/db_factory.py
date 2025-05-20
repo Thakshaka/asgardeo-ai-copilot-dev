@@ -42,10 +42,7 @@ def get_db_client():
         logger.info("Using PGVector as the vector database")
         _db_client = PGVectorClient()
     else:
-        logger.warning(f"Unknown database type: {db_type}. Falling back to Milvus.")
-        _db_client = MilvusClient(
-            uri=os.environ.get(const.ZILLIZ_CLOUD_URI),
-            token=os.environ.get(const.ZILLIZ_CLOUD_API_KEY)
-        )
+        logger.warning(f"Unknown database type: {db_type}. Falling back to PGVector.")
+        _db_client = PGVectorClient()
 
     return _db_client
