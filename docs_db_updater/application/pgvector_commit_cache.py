@@ -23,7 +23,7 @@ def create_commits_collection(db_client):
         enable_dynamic_field=False,
     )
     schema.add_field(field_name=const.PRODUCT, datatype="VARCHAR", is_primary=True, max_length=100)
-    schema.add_field(field_name=const.LAST_UPDATED_COMMIT, datatype="VARCHAR", max_length=100)
+    schema.add_field(field_name=const.LAST_UPDATED_REF, datatype="VARCHAR", max_length=100)
     schema.add_field(field_name=const.LAST_UPDATER_VERSION, datatype="VARCHAR", max_length=100)
     schema.add_field(field_name=const.VECTOR, datatype="FLOAT_VECTOR", dim=1536)
     index_params = db_client.prepare_index_params()
@@ -35,7 +35,7 @@ def create_commits_collection(db_client):
     )
 
     db_client.create_collection(
-        collection_name=os.environ.get(const.COMMITS_COLLECTION),
+        collection_name=const.TRACKING_COLLECTION,
         metric_type="COSINE",
         schema=schema,
         index_params=index_params
@@ -52,14 +52,14 @@ def retrieve_last_updated_commit(db_client):
         try:
             # Use lowercase column names in the filter and output fields
             cached_commit = db_client.query(
-                collection_name=os.environ.get(const.COMMITS_COLLECTION),
+                collection_name=const.TRACKING_COLLECTION,
                 filter=f"{const.PRODUCT} = '{os.environ.get(const.PRODUCT_NAME)}'",
-                output_fields=["last_updated_commit", "last_updater_version"]
+                output_fields=["last_updated_ref", "last_updater_version"]
             )
             if cached_commit:
                 # Map the lowercase column names back to the constant keys for consistency
                 return {
-                    const.LAST_UPDATED_COMMIT: cached_commit[0]["last_updated_commit"],
+                    const.LAST_UPDATED_REF: cached_commit[0]["last_updated_ref"],
                     const.LAST_UPDATER_VERSION: cached_commit[0]["last_updater_version"]
                 }
         except Exception as e:
@@ -67,7 +67,7 @@ def retrieve_last_updated_commit(db_client):
             sleep = sleep*2
             time.sleep(sleep)
             attempt += 1
-    logger.error(f"All {retries} retries failed for querying collection {os.environ.get(const.COMMITS_COLLECTION)}")
+    logger.error(f"All {retries} retries failed for querying collection {const.TRACKING_COLLECTION}")
     return None
 
 def update_last_updated_commit(commit_sha, db_client):
@@ -81,18 +81,18 @@ def update_last_updated_commit(commit_sha, db_client):
     payload = {
         "product": os.environ.get(const.PRODUCT_NAME),
         "vector": dummy_vector,
-        "last_updated_commit": commit_sha,
+        "last_updated_ref": commit_sha,
         "last_updater_version": const.UPDATER_VERSION
     }
 
-    response = db_client.upsert(collection_name=os.environ.get(const.COMMITS_COLLECTION), data=payload)
+    response = db_client.upsert(collection_name=const.TRACKING_COLLECTION, data=payload)
     logger.info(f"Latest commit sha {commit_sha} was updated successfully with response {response}")
 
 def check_collection_existence(db_client):
     """
     Check if the commits collection exists.
     """
-    has = db_client.has_collection(collection_name=os.environ.get(const.COMMITS_COLLECTION))
+    has = db_client.has_collection(collection_name=const.TRACKING_COLLECTION)
     if not has:
         return False
     return True

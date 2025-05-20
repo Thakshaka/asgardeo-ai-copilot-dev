@@ -23,7 +23,7 @@ def create_releases_collection(db_client):
         enable_dynamic_field=False,
     )
     schema.add_field(field_name=const.PRODUCT, datatype="VARCHAR", is_primary=True, max_length=100)
-    schema.add_field(field_name=const.LAST_UPDATED_RELEASE, datatype="VARCHAR", max_length=100)
+    schema.add_field(field_name=const.LAST_UPDATED_REF, datatype="VARCHAR", max_length=100)
     schema.add_field(field_name=const.LAST_UPDATER_VERSION, datatype="VARCHAR", max_length=100)
     schema.add_field(field_name=const.VECTOR, datatype="FLOAT_VECTOR", dim=1536)
     index_params = db_client.prepare_index_params()
@@ -35,7 +35,7 @@ def create_releases_collection(db_client):
     )
 
     db_client.create_collection(
-        collection_name=os.environ.get(const.RELEASES_COLLECTION),
+        collection_name=const.TRACKING_COLLECTION,
         metric_type="COSINE",
         schema=schema,
         index_params=index_params
@@ -51,13 +51,13 @@ def retrieve_last_updated_release(db_client):
     while attempt < retries:
         try:
             cached_release = db_client.query(
-                collection_name=os.environ.get(const.RELEASES_COLLECTION),
+                collection_name=const.TRACKING_COLLECTION,
                 filter=f"{const.PRODUCT} = '{os.environ.get(const.PRODUCT_NAME)}'",
-                output_fields=["last_updated_release", "last_updater_version"]
+                output_fields=["last_updated_ref", "last_updater_version"]
             )
             if cached_release:
                 return {
-                    const.LAST_UPDATED_RELEASE: cached_release[0]["last_updated_release"],
+                    const.LAST_UPDATED_REF: cached_release[0]["last_updated_ref"],
                     const.LAST_UPDATER_VERSION: cached_release[0]["last_updater_version"]
                 }
         except Exception as e:
@@ -65,7 +65,7 @@ def retrieve_last_updated_release(db_client):
             sleep = sleep*2
             time.sleep(sleep)
             attempt += 1
-    logger.error(f"All {retries} retries failed for querying collection {os.environ.get(const.RELEASES_COLLECTION)}")
+    logger.error(f"All {retries} retries failed for querying collection {const.TRACKING_COLLECTION}")
     return None
 
 def update_last_updated_release(latest_release_tag, db_client):
@@ -79,18 +79,18 @@ def update_last_updated_release(latest_release_tag, db_client):
     payload = {
         "product": os.environ.get(const.PRODUCT_NAME),
         "vector": dummy_vector,
-        "last_updated_release": latest_release_tag,
+        "last_updated_ref": latest_release_tag,
         "last_updater_version": const.UPDATER_VERSION
     }
 
-    response = db_client.upsert(collection_name=os.environ.get(const.RELEASES_COLLECTION), data=payload)
+    response = db_client.upsert(collection_name=const.TRACKING_COLLECTION, data=payload)
     logger.info(f"Latest release tag {latest_release_tag} was updated successfully with response {response}")
 
 def check_collection_existence(db_client):
     """
     Check if the releases collection exists.
     """
-    has = db_client.has_collection(collection_name=os.environ.get(const.RELEASES_COLLECTION))
+    has = db_client.has_collection(collection_name=const.TRACKING_COLLECTION)
     if not has:
         return False
     return True

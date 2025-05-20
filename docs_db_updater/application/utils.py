@@ -31,15 +31,15 @@ def create_formatted_chunk(chunk, file_name, doc_link, embed):
     """
     Create a formatted chunk with metadata for vector storage.
     """
-    formatted_chunk = {os.environ.get(const.ASGARDEO_METADATA): {}}
-    formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.FILE_NAME] = file_name
-    formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.DOC_LINK] = doc_link
+    formatted_chunk = {const.METADATA: {}}
+    formatted_chunk[const.METADATA][const.FILE_NAME] = file_name
+    formatted_chunk[const.METADATA][const.DOC_LINK] = doc_link
     if const.HEADER3 in chunk.metadata.keys():
-        formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.HEADER3] = chunk.metadata[const.HEADER3]
+        formatted_chunk[const.METADATA][const.HEADER3] = chunk.metadata[const.HEADER3]
     if const.HEADER2 in chunk.metadata.keys():
-        formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.HEADER2] = chunk.metadata[const.HEADER2]
+        formatted_chunk[const.METADATA][const.HEADER2] = chunk.metadata[const.HEADER2]
     if const.HEADER1 in chunk.metadata.keys():
-        formatted_chunk[os.environ.get(const.ASGARDEO_METADATA)][const.HEADER1] = chunk.metadata[const.HEADER1]
+        formatted_chunk[const.METADATA][const.HEADER1] = chunk.metadata[const.HEADER1]
     formatted_chunk[const.TEXT] = chunk.page_content
     formatted_chunk[const.VECTOR] = embed.embed_query(chunk.page_content)
     return formatted_chunk
@@ -79,7 +79,7 @@ def delete_records(filename, milvus_client):
     """
     primary_keys = []
     filtered_records = milvus_client.query(collection_name=os.environ.get(const.DOCS_COLLECTION),
-                                           filter=f"{os.environ.get(const.ASGARDEO_METADATA)}['{const.FILE_NAME}'] == '{filename}'",
+                                           filter=f"{const.METADATA}['{const.FILE_NAME}'] == '{filename}'",
                                            output_fields=["pk"])
     for filtered_record in filtered_records:
         primary_keys.append(filtered_record["pk"])

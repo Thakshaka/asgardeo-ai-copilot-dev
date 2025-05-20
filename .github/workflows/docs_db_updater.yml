@@ -22,8 +22,7 @@ jobs:
           ZILLIZ_CLOUD_URI: ${{ secrets.ZILLIZ_CLOUD_URI }}
           ZILLIZ_CLOUD_API_KEY: ${{ secrets.ZILLIZ_CLOUD_API_KEY }}
           DOCS_COLLECTION: ${{ secrets.DOCS_COLLECTION }}
-          RELEASES_COLLECTION: ${{ secrets.RELEASES_COLLECTION }}
-          COMMITS_COLLECTION: ${{ secrets.COMMITS_COLLECTION }}
+          TRACKING_COLLECTION: ${{ secrets.TRACKING_COLLECTION }}
           AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -34,8 +33,7 @@ jobs:
             -e ZILLIZ_CLOUD_URI \
             -e ZILLIZ_CLOUD_API_KEY \
             -e DOCS_COLLECTION \
-            -e RELEASES_COLLECTION \
-            -e COMMITS_COLLECTION \
+            -e TRACKING_COLLECTION \
             -e AZURE_OPENAI_ENDPOINT \
             -e AZURE_OPENAI_API_KEY \
             -e GITHUB_TOKEN \

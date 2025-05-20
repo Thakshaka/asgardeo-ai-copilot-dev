@@ -17,7 +17,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-embed = AzureOpenAIEmbeddings(azure_deployment=os.environ.get(const.ASGARDEO_AI_EMBEDDING),
+embed = AzureOpenAIEmbeddings(azure_deployment=os.environ.get(const.AI_EMBEDDING),
                               openai_api_version=os.environ.get(const.DEPLOYMENT_VERSION),
                               azure_endpoint=os.environ.get(const.AZURE_OPENAI_ENDPOINT),
                               openai_api_key=os.environ.get(const.AZURE_OPENAI_API_KEY))
@@ -73,7 +73,7 @@ def insert_collection(latest_release_tag, assets):
                 embed,
                 drop_old=(i == 0),
                 collection_name=os.environ.get(const.DOCS_COLLECTION),
-                metadata_field=os.environ.get(const.ASGARDEO_METADATA),
+                metadata_field=const.METADATA,
                 connection_args={
                     "uri": os.environ.get(const.ZILLIZ_CLOUD_URI),
                     "token": os.environ.get(const.ZILLIZ_CLOUD_API_KEY),
@@ -95,22 +95,22 @@ def update_collection(latest_release_tag, assets):
         cache_history = release_cache.retrieve_last_updated_release(db_client)
 
     logger.info(f"Latest release tag: {latest_release_tag}")
-    logger.info(f"Last updated release tag: {cache_history[const.LAST_UPDATED_RELEASE] if cache_history else 'None'}")
+    logger.info(f"Last updated release tag: {cache_history[const.LAST_UPDATED_REF] if cache_history else 'None'}")
 
-    if not asset or cache_history[const.LAST_UPDATED_RELEASE] == latest_release_tag:
+    if not asset or cache_history[const.LAST_UPDATED_REF] == latest_release_tag:
         return
 
     def check_drop_collection():
         #  We will use docs_db_updater version to specify if there are code changes
-        #  First we check if the docs_db_updater version field is in the RELEASES_COLLECTION
-        collections_stats = db_client.describe_collection(collection_name=os.environ.get(const.RELEASES_COLLECTION))
+        #  First we check if the docs_db_updater version field is in the TRACKING_COLLECTION
+        collections_stats = db_client.describe_collection(collection_name=const.TRACKING_COLLECTION)
         has_updater_field = False
         for field in collections_stats["fields"]:
             if field["name"] == const.LAST_UPDATER_VERSION:
                 has_updater_field = True
         if not has_updater_field:
-            logger.info(f"Dropping {os.environ.get(const.RELEASES_COLLECTION)} to create new schema")
-            db_client.drop_collection(collection_name=os.environ.get(const.RELEASES_COLLECTION))
+            logger.info(f"Dropping {const.TRACKING_COLLECTION} to create new schema")
+            db_client.drop_collection(collection_name=const.TRACKING_COLLECTION)
             return True
         if cache_history is None:
             logger.info("Replaced the whole collection since the last release was missing")
@@ -121,7 +121,7 @@ def update_collection(latest_release_tag, assets):
     if check_drop_collection():
         insert_collection(latest_release_tag, assets)
     else:
-        added, modified, deleted = utils.compare_releases(cache_history[const.LAST_UPDATED_RELEASE], latest_release_tag)
+        added, modified, deleted = utils.compare_releases(cache_history[const.LAST_UPDATED_REF], latest_release_tag)
         db_utils.process_changes(added, modified, deleted, db_client, embed)
 
 # Repository-based document processing functions
@@ -167,7 +167,7 @@ def insert_repo_collection():
                 embed,
                 drop_old=(i == 0),
                 collection_name=os.environ.get(const.DOCS_COLLECTION),
-                metadata_field=os.environ.get(const.ASGARDEO_METADATA),
+                metadata_field=const.METADATA,
                 connection_args={
                     "uri": os.environ.get(const.ZILLIZ_CLOUD_URI),
                     "token": os.environ.get(const.ZILLIZ_CLOUD_API_KEY),
@@ -193,9 +193,9 @@ def update_repo_collection(latest_commit):
         insert_repo_collection()
         return
 
-    logger.info(f"Last updated commit: {cache_history[const.LAST_UPDATED_COMMIT]}")
+    logger.info(f"Last updated commit: {cache_history[const.LAST_UPDATED_REF]}")
 
-    if cache_history[const.LAST_UPDATED_COMMIT] == latest_commit:
+    if cache_history[const.LAST_UPDATED_REF] == latest_commit:
         logger.info("No changes since last update")
         return
 
@@ -212,7 +212,7 @@ def update_repo_collection(latest_commit):
     if check_drop_collection():
         insert_repo_collection()
     else:
-        commits_files = utils.compare_commits(str(cache_history[const.LAST_UPDATED_COMMIT]), latest_commit)
+        commits_files = utils.compare_commits(str(cache_history[const.LAST_UPDATED_REF]), latest_commit)
         added, deleted = utils.get_diff_from_commits(commits_files)
         db_utils.process_repo_changes(added, deleted, db_client, embed)
 
@@ -230,14 +230,17 @@ def update_docs_db():
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
 
     if db_type == "pgvector":
-        # Check if the collection registry table contains a row with the name matching DOCS_COLLECTION
-        collection_registry_table = os.environ.get(const.PGVECTOR_COLLECTION_REGISTRY_TABLE)
-        docs_collection_name = os.environ.get(const.DOCS_COLLECTION)
-        has = db_client.query(
-            collection_name=collection_registry_table,
-            filter=f"name = '{docs_collection_name}'",
-            output_fields=["name"]
-        ) != []
+        if (db_client.has_collection(collection_name=const.PGVECTOR_COLLECTION_REGISTRY_TABLE)):
+            # Check if the collection registry table contains a row with the name matching DOCS_COLLECTION
+            collection_registry_table = const.PGVECTOR_COLLECTION_REGISTRY_TABLE
+            docs_collection_name = os.environ.get(const.DOCS_COLLECTION)
+            has = db_client.query(
+                collection_name=collection_registry_table,
+                filter=f"name = '{docs_collection_name}'",
+                output_fields=["name"]
+            ) != []
+        else:
+            has = False
     else:
         has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
 
