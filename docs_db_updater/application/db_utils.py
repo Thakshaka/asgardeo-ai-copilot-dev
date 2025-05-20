@@ -32,8 +32,8 @@ def delete_records(filename, db_client):
         def _delete_records_func(conn, filename):
             nonlocal primary_keys
             with conn.cursor() as cursor:
-                # Use EMBEDDINGS_COLLECTION_PGVECTOR for pgvector
-                collection_name = os.environ.get(const.EMBEDDINGS_COLLECTION_PGVECTOR)
+                # Use PGVECTOR_EMBEDDING_TABLE for pgvector
+                collection_name = os.environ.get(const.PGVECTOR_EMBEDDING_TABLE)
                 cursor.execute(
                     f"SELECT collection_id FROM {collection_name} WHERE cmetadata->>'filename' = %s",
                     (filename,)
@@ -121,7 +121,7 @@ def add_records(filename, file_content, db_client, embed):
         PGVector.from_documents(
             documents,
             embed,
-            collection_name=os.environ.get(const.EMBEDDINGS_COLLECTION_PGVECTOR),
+            collection_name=os.environ.get(const.PGVECTOR_EMBEDDING_TABLE),
             connection_string=connection_string,
         )
     else:

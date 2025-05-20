@@ -230,7 +230,14 @@ def update_docs_db():
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
 
     if db_type == "pgvector":
-        has = db_client.has_collection(collection_name=os.environ.get(const.EMBEDDINGS_COLLECTION_PGVECTOR))
+        # Check if the collection registry table contains a row with the name matching DOCS_COLLECTION
+        collection_registry_table = os.environ.get(const.PGVECTOR_COLLECTION_REGISTRY_TABLE)
+        docs_collection_name = os.environ.get(const.DOCS_COLLECTION)
+        has = db_client.query(
+            collection_name=collection_registry_table,
+            filter=f"name = '{docs_collection_name}'",
+            output_fields=["name"]
+        ) != []
     else:
         has = db_client.has_collection(collection_name=os.environ.get(const.DOCS_COLLECTION))
 
