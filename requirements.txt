@@ -1,13 +1,20 @@
+# LangChain and Vector DB dependencies
+langchain>=0.0.335
 langchain-community>=0.0.10
 langchain-openai>=0.0.2
-langchain>=0.0.335
+langchain-cohere>=0.0.1
 pymilvus>=2.3.0
-python-dotenv>=1.0.0
-requests>=2.31.0
-markdownify>=0.11.6
-beautifulsoup4>=4.12.2
+tiktoken>=0.5.1
+psycopg2-binary>=2.9.6 
+pgvector>=0.2.0
+
+# Web and API dependencies
 fastapi>=0.104.0
 uvicorn>=0.23.2
-tiktoken>=0.5.1
-langchain-cohere>=0.0.1
+requests>=2.31.0
+python-dotenv>=1.0.0
 pydantic>=2.4.2
+
+# Document processing dependencies
+markdownify>=0.11.6
+beautifulsoup4>=4.12.2
