@@ -37,7 +37,7 @@ def insert_collection(latest_release_tag, assets):
     logger.info(f"Latest release tag: {latest_release_tag}")
 
     docs = utils.get_chunked_docs(asset, embed)
-    batch_size = os.environ.get(const.BATCH_SIZE)
+    batch_size = int(os.environ.get(const.BATCH_SIZE))
 
     # Determine which database type we're using
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
