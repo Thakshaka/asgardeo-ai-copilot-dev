@@ -131,7 +131,7 @@ def insert_repo_collection():
     """
     filenames = utils.load_md_files_from_repo()
     docs = utils.get_chunked_docs_from_repo(filenames, embed)
-    batch_size = os.environ.get(const.BATCH_SIZE)
+    batch_size = int(os.environ.get(const.BATCH_SIZE))
 
     # Determine which database type we're using
     db_type = os.environ.get(const.VECTOR_DB_TYPE, const.DEFAULT_VECTOR_DB_TYPE).lower()
