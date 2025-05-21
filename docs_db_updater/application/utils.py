@@ -186,7 +186,7 @@ def get_chunked_docs(asset, embed):
                 file_path = os.path.join(root, file)
 
                 rel_path = os.path.relpath(file_path, temp_dir)
-                if rel_path.replace(os.path.sep, "/") in os.environ.get(const.IGNORE_REL_PATHS, ()):
+                if rel_path.replace(os.path.sep, "/") in eval(os.environ.get(const.IGNORE_REL_PATHS, ())):
                     continue
 
                 with open(file_path, "r", encoding="utf-8") as f:
@@ -243,13 +243,13 @@ def compare_releases(last_updated_release_tag, latest_release_tag):
             os.path.relpath(os.path.join(dp, f), last_updated_release_extract_path): hash_file(os.path.join(dp, f))
             for dp, _, filenames in os.walk(last_updated_release_extract_path)
             for f in filenames
-            if f.endswith(".html") and f.replace(os.path.sep, "/") not in os.environ.get(const.IGNORE_REL_PATHS, ())
+            if f.endswith(".html") and f.replace(os.path.sep, "/") not in eval(os.environ.get(const.IGNORE_REL_PATHS, ()))
         }
         latest_release_files = {
             os.path.relpath(os.path.join(dp, f), latest_release_extract_path): hash_file(os.path.join(dp, f))
             for dp, _, filenames in os.walk(latest_release_extract_path)
             for f in filenames
-            if f.endswith(".html") and f.replace(os.path.sep, "/") not in os.environ.get(const.IGNORE_REL_PATHS, ())
+            if f.endswith(".html") and f.replace(os.path.sep, "/") not in eval(os.environ.get(const.IGNORE_REL_PATHS, ()))
         }
 
         added, modified, deleted = [], [], []
@@ -320,7 +320,7 @@ def load_md_files_from_repo():
     response.raise_for_status()
     file_names = [item[const.PATH] for item in response.json().get(const.TREE, [])
                   if item[const.PATH].endswith(const.MD_FORMAT) and os.environ.get(const.MAIN_DIR) in item[const.PATH] and
-                  not any(ignore_file in item[const.PATH] for ignore_file in os.environ.get(const.IGNORE_FILES, []))]
+                  not any(ignore_file in item[const.PATH] for ignore_file in eval(os.environ.get(const.IGNORE_FILES, [])))]
     return file_names
 
 def get_chunked_docs_from_repo(filenames, embed):
@@ -363,7 +363,7 @@ def get_diff_from_commits(files):
     added = []
     deleted = []
     for file in files:
-        if any(ignore_file in file[const.FILE_NAME] for ignore_file in os.environ.get(const.IGNORE_FILES)):
+        if any(ignore_file in file[const.FILE_NAME] for ignore_file in eval(os.environ.get(const.IGNORE_FILES))):
             continue
         if os.environ.get(const.MAIN_DIR) in file[const.FILE_NAME] and file[const.FILE_NAME].endswith('.md'):
             if file['status'] in ['added', 'modified']:
